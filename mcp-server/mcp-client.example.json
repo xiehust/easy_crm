@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "easy-crm": {
+      "command": "node",
+      "args": ["/absolute/path/to/easy_crm/mcp-server/src/server.js"],
+      "env": {
+        "MCP_TRANSPORT": "stdio",
+        "MCP_SERVICE_TOKEN": "replace_with_local_service_token",
+        "DATABASE_URL": "postgres://crm:crm_dev_password@localhost:5432/easy_crm"
+      }
+    }
+  }
+}

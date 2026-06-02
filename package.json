@@ -1,0 +1,17 @@
+{
+  "name": "easy-crm",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "frontend",
+    "backend",
+    "mcp-server",
+    "infra"
+  ],
+  "scripts": {
+    "install:all": "npm install --workspaces --include-workspace-root",
+    "test": "npm run test --workspace backend && npm run test --workspace mcp-server",
+    "build": "npm run build --workspace frontend && npm run build --workspace backend && npm run build --workspace mcp-server && npm run build --workspace infra",
+    "lint": "npm run lint --workspace frontend && npm run lint --workspace backend && npm run lint --workspace mcp-server"
+  }
+}

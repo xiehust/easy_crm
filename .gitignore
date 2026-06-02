@@ -1,0 +1,13 @@
+node_modules/
+dist/
+build/
+coverage/
+.env
+.env.local
+*.log
+cdk.out/
+cdk.context.json
+*.tsbuildinfo
+.DS_Store
+.agents/
+.login
