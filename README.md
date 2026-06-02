@@ -31,23 +31,23 @@ For Docker-based local development:
 
 ## AWS Deployment
 
-The demo stack is deployed with CloudFormation stack `EasyCrmStack`. The current target region is `us-east-2`.
+The demo stack is deployed with CloudFormation stack `EasyCrmStack`.
 
 ```bash
-AWS_REGION=us-east-2 ./scripts/deploy.sh
+AWS_REGION=<AWS_REGION> ./scripts/deploy.sh
 ```
 
 If an external MCP client gives you a specific OAuth callback URL, pass it to the confidential MCP Cognito app client during deployment:
 
 ```bash
-AWS_REGION=us-east-2 ./scripts/deploy.sh \
+AWS_REGION=<AWS_REGION> ./scripts/deploy.sh \
   --parameters McpOAuthCallbackUrls='https://client.example.com/oauth/callback'
 ```
 
 `McpOAuthCallbackUrls` is a comma-delimited list, so multiple callback URLs can be passed in one value:
 
 ```bash
-AWS_REGION=us-east-2 ./scripts/deploy.sh \
+AWS_REGION=<AWS_REGION> ./scripts/deploy.sh \
   --parameters McpOAuthCallbackUrls='https://client.example.com/callback,https://client.example.com/alt-callback'
 ```
 
@@ -65,7 +65,7 @@ After deployment, fetch the values from CloudFormation outputs:
 
 ```bash
 aws cloudformation describe-stacks \
-  --region us-east-2 \
+  --region <AWS_REGION> \
   --stack-name EasyCrmStack \
   --query 'Stacks[0].Outputs' \
   --output table
@@ -81,23 +81,13 @@ The MCP client configuration should use:
 - `Authorization URL`: `CognitoMcpAuthorizeUrl`
 - `Scopes`: `openid email profile`
 - `Resource URL`: `McpEndpoint`
-
-Current `us-east-2` deployment values:
-
-- `Client ID`: `41td8cdvp4kbg1hkk8i7uclo3j`
-- `Client secret`: run the command below
-- `Token URL`: `https://easy-crm-c8cdd506.auth.us-east-2.amazoncognito.com/oauth2/token`
-- `Authorization URL`: `https://easy-crm-c8cdd506.auth.us-east-2.amazoncognito.com/oauth2/authorize`
-- `Scopes`: `openid email profile`
-- `Resource URL`: `https://d1vn7o33ycxs3a.cloudfront.net/mcp`
-- `Resource server identifier`: `https://d1vn7o33ycxs3a.cloudfront.net/mcp`
-- `Callback URLs`: `https://us-east-1.quicksight.aws.amazon.com/sn/account/anycompany-digital/oauthcallback`, `https://us-east-1.quicksight.aws.amazon.com/sn/oauthcallback`, `http://localhost:5555/callback/zJW_9JhwgoXA`
+- `Resource server identifier`: `CognitoMcpResourceServerIdentifier`
 
 ```bash
 aws cognito-idp describe-user-pool-client \
-  --region us-east-2 \
-  --user-pool-id us-east-2_n29sFim3E \
-  --client-id 41td8cdvp4kbg1hkk8i7uclo3j \
+  --region <AWS_REGION> \
+  --user-pool-id <CognitoUserPoolId> \
+  --client-id <CognitoMcpAppClientId> \
   --query UserPoolClient.ClientSecret \
   --output text
 ```
@@ -105,10 +95,13 @@ aws cognito-idp describe-user-pool-client \
 For Codex MCP configuration with the public client, this command is still supported:
 
 ```bash
+MCP_ENDPOINT="<McpEndpoint>"
+COGNITO_APP_CLIENT_ID="<CognitoAppClientId>"
+
 codex mcp add easycrm \
-  --url https://d1vn7o33ycxs3a.cloudfront.net/mcp \
-  --oauth-client-id 2jlsj51ac74hbrm1knkko83psg \
-  --oauth-resource https://d1vn7o33ycxs3a.cloudfront.net/mcp
+  --url "$MCP_ENDPOINT" \
+  --oauth-client-id "$COGNITO_APP_CLIENT_ID" \
+  --oauth-resource "$MCP_ENDPOINT"
 ```
 
 ## Security Notes

@@ -86,9 +86,9 @@ HTTP 模式适合本地或 ECS HTTP 访问：
 ```bash
 MCP_TRANSPORT=http \
 MCP_PORT=4111 \
-AWS_REGION=us-east-2 \
-COGNITO_USER_POOL_ID=us-east-2_example \
-COGNITO_CLIENT_ID=exampleclientid \
+AWS_REGION=<AWS_REGION> \
+COGNITO_USER_POOL_ID=<CognitoUserPoolId> \
+COGNITO_CLIENT_ID=<CognitoAppClientId> \
 DATABASE_URL=postgres://... \
 npm start
 ```
@@ -101,7 +101,7 @@ HTTP MCP 还支持 MCP Authorization spec 的 OAuth 2.1 Resource Server discover
 - `GET /.well-known/oauth-protected-resource/mcp` 返回 RFC 9728 Protected Resource Metadata，其中 `authorization_servers` 指向 Cognito issuer。
 - MCP client 可继续读取 Cognito OIDC/AS metadata，并使用 Authorization Code + PKCE 登录获取 access token。
 
-Cognito 不支持 Dynamic Client Registration；客户端需要使用 CDK 输出的 `CognitoAppClientId`，并且 redirect URI 必须预先登记在 Cognito app client 中。Codex CLI 可使用 `mcp_oauth_callback_url = "http://localhost:5555/callback"`；对应的 Cognito callback URL 是 `http://localhost:5555/callback/zJW_9JhwgoXA`。
+Cognito 不支持 Dynamic Client Registration；客户端需要使用 CDK 输出的 `CognitoAppClientId`，并且 redirect URI 必须预先登记在 Cognito app client 中。Codex CLI 可使用固定的 `mcp_oauth_callback_url`，对应的完整 Cognito callback URL 以实际 Codex 输出为准。
 
 ### Codex CLI MCP 配置
 
@@ -167,40 +167,40 @@ CDK 会创建两个 Cognito app client：
 部署时如果外部 client 提供了固定 callback/redirect URL，需要通过 `McpOAuthCallbackUrls` 参数传入。该参数是逗号分隔列表：
 
 ```bash
-AWS_REGION=us-east-2 ./scripts/deploy.sh \
-  --parameters McpOAuthCallbackUrls='https://us-east-1.quicksight.aws.amazon.com/sn/account/anycompany-digital/oauthcallback,https://us-east-1.quicksight.aws.amazon.com/sn/oauthcallback,http://localhost:5555/callback/zJW_9JhwgoXA'
+AWS_REGION=<AWS_REGION> ./scripts/deploy.sh \
+  --parameters McpOAuthCallbackUrls='<QuickSightCallbackUrl>,<CodexCallbackUrl>'
 ```
 
-当前 `us-east-2` 部署中，QuickSight/MCP OAuth 配置如下：
+QuickSight/MCP OAuth 配置应使用 CloudFormation outputs 中的值：
 
-- `Client ID`：`41td8cdvp4kbg1hkk8i7uclo3j`
+- `Client ID`：`CognitoMcpAppClientId`
 - `Client secret`：运行下面的 AWS CLI 命令获取，不要提交到代码库
-- `Token URL`：`https://easy-crm-c8cdd506.auth.us-east-2.amazoncognito.com/oauth2/token`
-- `Authorization URL`：`https://easy-crm-c8cdd506.auth.us-east-2.amazoncognito.com/oauth2/authorize`
+- `Token URL`：`CognitoMcpTokenUrl`
+- `Authorization URL`：`CognitoMcpAuthorizeUrl`
 - `Scopes`：`openid email profile`
-- `Resource URL`：`https://d1vn7o33ycxs3a.cloudfront.net/mcp`
-- `Resource server identifier`：`https://d1vn7o33ycxs3a.cloudfront.net/mcp`
-- `Callback URLs`：`https://us-east-1.quicksight.aws.amazon.com/sn/account/anycompany-digital/oauthcallback`、`https://us-east-1.quicksight.aws.amazon.com/sn/oauthcallback`、`http://localhost:5555/callback/zJW_9JhwgoXA`
+- `Resource URL`：`McpEndpoint`
+- `Resource server identifier`：`CognitoMcpResourceServerIdentifier`
+- `Callback URLs`：部署时通过 `McpOAuthCallbackUrls` 传入的完整 callback URL 列表
 
-获取当前 MCP confidential client secret：
+获取 MCP confidential client secret：
 
 ```bash
 aws cognito-idp describe-user-pool-client \
-  --region us-east-2 \
-  --user-pool-id us-east-2_n29sFim3E \
-  --client-id 41td8cdvp4kbg1hkk8i7uclo3j \
+  --region <AWS_REGION> \
+  --user-pool-id <CognitoUserPoolId> \
+  --client-id <CognitoMcpAppClientId> \
   --query UserPoolClient.ClientSecret \
   --output text
 ```
 
-QuickSight 登录时使用的是 Cognito User Pool `us-east-2_n29sFim3E` 中的用户，不是 AWS Console 或 QuickSight 自身的密码。比如已确认用户 `testuser-1780383026` 处于 `CONFIRMED` 且 `Enabled=true`，可用于 MCP OAuth 登录。
+QuickSight 登录时使用的是部署创建的 Cognito User Pool 中的用户，不是 AWS Console 或 QuickSight 自身的密码。用户必须处于 `CONFIRMED` 且 `Enabled=true` 状态。
 
 ## AWS 一键部署
 
 默认部署会创建 demo 环境：VPC、公私子网、ECS Cluster、API Fargate Service、MCP Fargate Service、public API ALB、public MCP ALB、Aurora PostgreSQL Serverless v2、Cognito User Pool、Hosted UI domain、Secrets Manager、S3 + CloudFront 前端。CloudFront 同时代理 `/api/*` 和 `/mcp`。
 
 ```bash
-export AWS_REGION=us-east-2
+export AWS_REGION=<AWS_REGION>
 ./scripts/deploy.sh
 ```
 
