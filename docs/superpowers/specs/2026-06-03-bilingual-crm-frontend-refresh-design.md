@@ -15,7 +15,6 @@ In scope:
 - Centralize UI copy in a local translation map instead of hardcoding visible strings throughout components.
 - Translate navigation, dashboard labels, form labels, table headers, buttons, status text, loading/error messages, empty states, and deal stage labels.
 - Refresh the visual system for the login screen, authenticated shell, dashboard, CRUD tables, forms, badges, alerts, and responsive layouts.
-- Add the required subtle `Created By Deerflow` attribution link to `https://deerflow.tech`.
 - Keep the existing data model and API client behavior.
 
 Out of scope:
@@ -52,7 +51,6 @@ Deal stages should keep their API values unchanged:
 Login screen:
 - Present Easy CRM as a polished business workspace.
 - Localize title, helper text, sign-in button, loading, and setup copy.
-- Include the subtle Deerflow attribution.
 
 Authenticated shell:
 - Improve the shell hierarchy with clearer brand treatment, navigation, refresh, sign out, and language controls.
@@ -128,4 +126,3 @@ Verification should include:
 - Deal stage API values are unchanged while display labels are localized.
 - The app has a substantially more polished, dense, operational CRM appearance.
 - Mobile layout does not overlap text or controls.
-- A subtle clickable `Created By Deerflow` link is present.
