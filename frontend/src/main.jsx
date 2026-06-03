@@ -15,7 +15,8 @@ if (!authority || !config.cognitoClientId) {
       <div className="setup-screen">
         <section className="setup-panel">
           <h1>Easy CRM</h1>
-          <p>Cognito runtime configuration is missing. Set the VITE_COGNITO_* values for local development or deploy with CDK to generate /config.js.</p>
+          <p className="muted">Cognito 运行配置缺失。请在本地开发中设置 VITE_COGNITO_*，或通过 CDK 部署生成 /config.js。</p>
+          <p className="muted">Cognito runtime configuration is missing. Set the VITE_COGNITO_* values for local development or deploy with CDK to generate /config.js.</p>
         </section>
       </div>
     </React.StrictMode>
